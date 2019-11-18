@@ -1,0 +1,41 @@
+# 框架配置
+appname: "unknown"
+debug: true   # 是否调试模式(调试模式会输出命令行日志)，服务器环境务必为false
+pprof: false
+copyrequestbody: true
+maxprocs: 0
+localcloudid: 0
+responseheader: "Response-Code"
+webmacro: {
+  "<srv_push>": "http://<HTTP_HOST>:9090",
+  "<web_fed>": "http://<HTTP_HOST>:8282",
+  "<web_go>": "http://<HTTP_HOST>:9899",
+  "<web_open>": "http://<HTTP_HOST>:8888",
+  "<web_client>": "http://<HTTP_HOST>:8282"
+}
+libsapiurl: "http://%s:8989/Libs/api.php"
+
+http:
+  port: ":8080"
+
+log:
+  path: "/Users/linjianli/Workspace/ccwork-go/unknown/log/unknown.log"
+  level: "error"
+
+db:
+  # 示例:
+  # mysql - {user}:{password}@tcp(127.0.0.1:3306)/{database}?timeout=1s&readTimeout=1s&writeTimeout=1s&parseTime=true&loc=Local&charset=utf8mb4,utf8
+  # odbc - DRIVER={KingbaseES 8 ODBC Driver};DATABASE=TEST;SERVER=192.168.0.99;UID=SYSTEM;PWD=123456;"
+  driver: "mysql"
+  dsn: "root:root@tcp(127.0.0.1:3306)/?charset=utf8&parseTime=True&loc=Local" #
+
+mongo:
+  addr: "127.0.0.1:27017"
+  user: "kookk"
+  pass: "kook9009"
+  timeout: 3
+
+redis:
+  addr: "127.0.0.1:63790"
+  pass: ""
+  db: 0

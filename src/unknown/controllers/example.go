@@ -4,8 +4,11 @@ import (
     "github.com/astaxie/beego"
     "github.com/json-iterator/go"
 
+    "environment/tool"
+
     "ccgwf/base"
     Error "ccgwf/error"
+    "ccgwf/logs"
 
     "unknown/models"
 )
@@ -32,10 +35,10 @@ type ExampleController struct {
  *    "time_cost": "0.00004",
  *    "datas": [
  *      {
- *        "id": "1",
+ *        "id": 1,
  *        "name": "味千拉面",
- *        "distance": "500",
- *        "star": "4.5",
+ *        "distance": 500,
+ *        "star": 4.5,
  *      }
  *    ]
  *  }
@@ -45,13 +48,6 @@ func (e *ExampleController) ShopList() {
     e.Initialize(e.Ctx)
     e.Output(Error.SUCCESS, models.GetShops())
     return
-}
-
-type ShopAddRequest struct {
-    UID      string  `json:"uid"`
-    Name     string  `json:"name"`
-    Distance int64   `json:"distance"`
-    Star     float32 `json:"star"`
 }
 
 /**
@@ -64,8 +60,8 @@ type ShopAddRequest struct {
  * {
  *   "uid": "UID",
  *   "name": "味千拉面",
- *   "distance": "500",
- *   "star": "4.5",
+ *   "distance": 500,
+ *   "star": 4.5,
  * }
  *
  * @apiSuccessExample Success-Response:
@@ -77,6 +73,14 @@ type ShopAddRequest struct {
  *    "time_cost": "0.00004",
  *  }
  */
+
+type ShopAddRequest struct {
+    UID      string  `json:"uid"`
+    Name     string  `json:"name"`
+    Distance int64   `json:"distance"`
+    Star     float32 `json:"star"`
+}
+
 func (e *ExampleController) ShopAdd() {
 
     e.Initialize(e.Ctx)
@@ -113,8 +117,8 @@ func (e *ExampleController) ShopAdd() {
  *   "uid": "UID",
  *   "subject": "今天吃什么",
  *   "shops": [
- *     "sid1",
- *     "sid2",
+ *     sid1,
+ *     sid2,
  *   ],
  * }
  *
@@ -126,12 +130,49 @@ func (e *ExampleController) ShopAdd() {
  *    "timestamp": "1575518905",
  *    "time_cost": "0.00004",
  *    "datas": {
- *      "vid": "VID"
+ *      "vid": VID
  *    }
  *  }
  */
+
+type VoteAddRequest struct {
+    UID     string  `json:"uid"`
+    Subject string  `json:"subject"`
+    Shops   []int64 `json:"shops"`
+}
+
 func (e *ExampleController) VoteAdd() {
+
     e.Initialize(e.Ctx)
+
+    var request VoteAddRequest
+    if err := json.Unmarshal(e.Ctx.Input.RequestBody, &request); err != nil {
+        e.Output(Error.PARAM_ERROR, err.Error())
+        return
+    }
+
+    vid, err := models.AddVote(&models.Vote{
+        UID:     request.UID,
+        Subject: request.Subject,
+    })
+    if err != nil {
+        e.Output(Error.SERVER_INTERVAL_ERROR, err.Error())
+        return
+    }
+
+    voteOptions := make([]*models.VoteOptions, len(request.Shops))
+    for k, v := range request.Shops {
+        voteOptions[k] = &models.VoteOptions{
+            VID: vid,
+            SID: v,
+        }
+    }
+
+    if err := models.AddVoteOptions(voteOptions); err != nil {
+        e.Output(Error.SERVER_INTERVAL_ERROR, err.Error())
+        return
+    }
+
     e.Output()
     return
 }
@@ -152,24 +193,44 @@ func (e *ExampleController) VoteAdd() {
  *      "subject": "今天吃什么",
  *      "shops": [
  *        {
- *          "id": "1",
+ *          "id": 1,
  *          "name": "味千拉面",
- *          "distance": "500",
- *          "star": "4.5",
+ *          "distance": 500,
+ *          "star": 4.5,
  *        },
  *        {
- *          "id": "2",
+ *          "id": 2,
  *          "name": "小杨生煎",
- *          "distance": "300",
- *          "star": "5.0",
+ *          "distance": 300,
+ *          "star": 5.0,
  *        }
  *      ]
  *    }
  *  }
  */
+
+type VoteGetResponse struct {
+    Subject string        `json:"subject"`
+    Shops   []models.Shop `json:"shops"`
+}
+
 func (e *ExampleController) VoteGet() {
+
     e.Initialize(e.Ctx)
-    e.Output()
+
+    id := e.Ctx.Input.Param(":id")
+
+    options := models.GetVoteOptionsByVID(tool.StringToInt64(id))
+
+    sids := make([]int64, len(options))
+    for k, v := range options {
+        sids[k] = v.SID
+    }
+    logs.Debug("sids %v", sids)
+
+    e.Output(Error.SUCCESS, &VoteGetResponse{
+        Shops: models.GetShopsByIDs(sids),
+    })
     return
 }
 
@@ -182,8 +243,8 @@ func (e *ExampleController) VoteGet() {
  * Content-Type: application/json
  * {
  *   "uid": "UID",
- *   "vid": "vid",
- *   "sid": "sid"
+ *   "vid": vid,
+ *   "sid": sid
  * }
  *
  * @apiSuccessExample Success-Response:
@@ -195,8 +256,23 @@ func (e *ExampleController) VoteGet() {
  *    "time_cost": "0.00004",
  *  }
  */
+
+type VotePostRequest struct {
+    UID string `json:"uid"`
+    VID int64  `json:"vid"`
+    SID int64  `json:"sid"`
+}
+
 func (e *ExampleController) VotePost() {
+
     e.Initialize(e.Ctx)
+
+    var request VotePostRequest
+    if err := json.Unmarshal(e.Ctx.Input.RequestBody, &request); err != nil {
+        e.Output(Error.PARAM_ERROR, err.Error())
+        return
+    }
+
     e.Output()
     return
 }

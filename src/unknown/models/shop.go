@@ -1,10 +1,15 @@
 package models
 
 import (
-    "fmt"
     "time"
 
+    "github.com/pkg/errors"
+
     "ccgwf/app"
+)
+
+var (
+    errDBNotFound = errors.New("DB instance not init!")
 )
 
 type Shop struct {
@@ -32,13 +37,24 @@ func AddShop(shop *Shop) (int64, error) {
 
     db := app.Kernel().GetDBClient()
     if db == nil {
-        return 0, fmt.Errorf("GetDBClient error")
+        return 0, errDBNotFound
     }
 
     err := db.Create(&shop).Error
     if err != nil {
-        return 0, fmt.Errorf("AddShopetDb err: %v", err)
+        return 0, errors.WithStack(err)
     }
 
     return shop.ID, nil
+}
+
+func GetShopsByIDs(ids []int64) (shops []Shop) {
+
+    db := app.Kernel().GetDBClient()
+    if db == nil {
+        return
+    }
+
+    db.Where(ids).Find(&shops)
+    return
 }

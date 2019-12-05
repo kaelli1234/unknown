@@ -160,9 +160,9 @@ func (e *ExampleController) VoteAdd() {
         return
     }
 
-    voteOptions := make([]*models.VoteOptions, len(request.Shops))
+    voteOptions := make([]*models.VoteOption, len(request.Shops))
     for k, v := range request.Shops {
-        voteOptions[k] = &models.VoteOptions{
+        voteOptions[k] = &models.VoteOption{
             VID: vid,
             SID: v,
         }
@@ -270,6 +270,16 @@ func (e *ExampleController) VotePost() {
     var request VotePostRequest
     if err := json.Unmarshal(e.Ctx.Input.RequestBody, &request); err != nil {
         e.Output(Error.PARAM_ERROR, err.Error())
+        return
+    }
+
+    _, err := models.AddVoteResult(&models.VoteResult{
+        VID: request.VID,
+        SID: request.SID,
+        UID: request.UID,
+    })
+    if err != nil {
+        e.Output(Error.SERVER_INTERVAL_ERROR, err.Error())
         return
     }
 

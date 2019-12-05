@@ -16,7 +16,7 @@ type Vote struct {
     CreatedAt time.Time `json:"created_at"`
 }
 
-type VoteOptions struct {
+type VoteOption struct {
     ID        int64     `json:"id"`
     VID       int64     `gorm:"column:vid" json:"vid"`
     SID       int64     `gorm:"column:sid" json:"sid"`
@@ -24,8 +24,8 @@ type VoteOptions struct {
     CreatedAt time.Time `json:"created_at"`
 }
 
-type VoteResults struct {
-    ID        int       `json:"id"`
+type VoteResult struct {
+    ID        int64     `json:"id"`
     VID       int64     `gorm:"column:vid" json:"vid"`
     SID       int64     `gorm:"column:sid" json:"sid"`
     UID       string    `json:"uid"`
@@ -48,7 +48,7 @@ func AddVote(vote *Vote) (int64, error) {
     return vote.ID, nil
 }
 
-func AddVoteOptions(voteOptions []*VoteOptions) error {
+func AddVoteOptions(voteOptions []*VoteOption) error {
 
     db := app.Kernel().GetDBClient()
     if db == nil {
@@ -76,7 +76,7 @@ func AddVoteOptions(voteOptions []*VoteOptions) error {
     return tx.Commit().Error
 }
 
-func GetVoteOptionsByVID(vid int64) (voteOptions []VoteOptions) {
+func GetVoteOptionsByVID(vid int64) (voteOptions []VoteOption) {
 
     db := app.Kernel().GetDBClient()
     if db == nil {
@@ -85,4 +85,19 @@ func GetVoteOptionsByVID(vid int64) (voteOptions []VoteOptions) {
 
     db.Where("vid = ?", vid).Find(&voteOptions)
     return
+}
+
+func AddVoteResult(voteResult *VoteResult) (int64, error) {
+
+    db := app.Kernel().GetDBClient()
+    if db == nil {
+        return 0, errDBNotFound
+    }
+
+    err := db.Create(&voteResult).Error
+    if err != nil {
+        return 0, errors.WithStack(err)
+    }
+
+    return voteResult.ID, nil
 }

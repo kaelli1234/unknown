@@ -173,7 +173,7 @@ func (e *ExampleController) VoteAdd() {
         return
     }
 
-    e.Output()
+    e.Output(Error.SUCCESS, map[string]int64{"vid": vid})
     return
 }
 

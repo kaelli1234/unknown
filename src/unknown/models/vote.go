@@ -33,6 +33,11 @@ type VoteResult struct {
     CreatedAt time.Time `json:"created_at"`
 }
 
+type GroupByVidVoteResult struct {
+    SID   int64 `gorm:"column:sid" json:"sid"`
+    Total int64 `json:"total"`
+}
+
 func AddVote(vote *Vote) (int64, error) {
 
     db := app.Kernel().GetDBClient()
@@ -100,4 +105,15 @@ func AddVoteResult(voteResult *VoteResult) (int64, error) {
     }
 
     return voteResult.ID, nil
+}
+
+func GetVoteResultGroupByVID(vid int64) (result []GroupByVidVoteResult) {
+
+    db := app.Kernel().GetDBClient()
+    if db == nil {
+        return
+    }
+
+    db.Table("vote_results").Where("vid = ?", vid).Select("sid, count(sid) AS total").Group("sid").Scan(&result)
+    return
 }

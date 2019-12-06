@@ -302,14 +302,68 @@ func (e *ExampleController) VotePost() {
  *    "datas": {
  *      "name": "今天吃什么",
  *      "shops": [
- *        "sid1": 10,
- *        "sid2": 1,
+ *        {
+ *          "id": 1,
+ *          "name": "味千拉面",
+ *          "distance": 500,
+ *          "star": 4.5,
+ *          "total": 1,
+ *        },
+ *        {
+ *          "id": 2,
+ *          "name": "小杨生煎",
+ *          "distance": 300,
+ *          "star": 5.0,
+ *          "total": 2,
+ *        }
  *      ]
  *    }
  *  }
  */
+
+type VoteResultResponse struct {
+    Name  string             `json:"name"`
+    Shops []*VoteResultShops `json:"shops"`
+}
+
+type VoteResultShops struct {
+    ID       int64   `json:"id"`
+    Name     string  `json:"name"`
+    Distance int64   `json:"distance"`
+    Star     float32 `json:"star"`
+    Total    int64   `json:"total"`
+}
+
 func (e *ExampleController) VoteResult() {
+
     e.Initialize(e.Ctx)
-    e.Output()
+
+    id := e.Ctx.Input.Param(":id")
+
+    results := models.GetVoteResultGroupByVID(tool.StringToInt64(id))
+    logs.Debug("results %+v", results)
+
+    sids := make([]int64, len(results))
+    sidsMap := make(map[int64]int64, len(results))
+    for k, v := range results {
+        sids[k] = v.SID
+        sidsMap[v.SID] = v.Total
+    }
+
+    logs.Debug("sidsMap %+v", sidsMap)
+
+    shops := models.GetShopsByIDs(sids)
+    datas := make([]*VoteResultShops, len(shops))
+    for k, v := range shops {
+        datas[k] = &VoteResultShops{
+            ID:       v.ID,
+            Name:     v.Name,
+            Distance: v.Distance,
+            Star:     v.Star,
+            Total:    sidsMap[v.ID],
+        }
+    }
+
+    e.Output(Error.SUCCESS, datas)
     return
 }

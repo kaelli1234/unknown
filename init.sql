@@ -67,5 +67,5 @@ CREATE TABLE `vote_results` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp,
   PRIMARY KEY (`id`),
-  UNIQUE KEY (`vid`, `sid`, `uid`)
+  UNIQUE KEY (`vid`, `uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -300,7 +300,7 @@ func (e *ExampleController) VotePost() {
  *    "timestamp": "1575518905",
  *    "time_cost": "0.00004",
  *    "datas": {
- *      "name": "今天吃什么",
+ *      "subject": "今天吃什么",
  *      "shops": [
  *        {
  *          "id": 1,
@@ -364,6 +364,8 @@ func (e *ExampleController) VoteResult() {
         }
     }
 
-    e.Output(Error.SUCCESS, datas)
+    e.Output(Error.SUCCESS, &VoteResultResponse{
+        Shops: datas,
+    })
     return
 }

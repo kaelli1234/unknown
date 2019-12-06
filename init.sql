@@ -31,6 +31,18 @@ CREATE TABLE `shops` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "一口轻食", 588, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "麦当劳", 477, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "手工粉", 606, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "食其家", 800, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "一秀寿司", 1024, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "桃屋料理", 998, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "丸龟制面", 332, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "过桥米线", 755, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "一乐拉面", 666, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "KFC", 233, 4.8);
+INSERT INTO `unknown`.`shops` (`uid`, `name`, `distance`, `star`) VALUES ("admin", "乐凯撒", 888, 4.8);
+
 --
 -- votes
 --

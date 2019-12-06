@@ -29,7 +29,7 @@ func GetShops() (shops []Shop) {
         return
     }
 
-    db.Find(&shops)
+    db.Order("id DESC").Limit(20).Find(&shops)
     return
 }
 

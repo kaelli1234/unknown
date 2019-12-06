@@ -41,6 +41,6 @@ BuildGcc=$(gcc --version | head -n 1 | sed 's/[()]//g')
 BuildGcc=${BuildGcc// /_}
 echo "BuildGcc: "$BuildGcc
 
-go build -ldflags " -X main.BuildTime=${BuildTime} -X main.BuildUser=${BuildUser} -X main.BuildVersion=${BuildVersion} -X main.BuildMachine=${BuildMachine} -X main.BuildGcc=${BuildGcc}" -o ./bin/${appName} ./src/${appName}/main.go
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags " -X main.BuildTime=${BuildTime} -X main.BuildUser=${BuildUser} -X main.BuildVersion=${BuildVersion} -X main.BuildMachine=${BuildMachine} -X main.BuildGcc=${BuildGcc}" -o ./bin/${appName} ./src/${appName}/main.go
 
 echo ${appName}" build done"
